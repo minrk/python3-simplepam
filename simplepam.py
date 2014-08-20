@@ -20,6 +20,9 @@ from ctypes import c_void_p, c_uint, c_char_p, c_char, c_int
 from ctypes.util import find_library
 import sys
 
+if sys.version_info >= (3,):
+    unicode = str
+
 libpam = CDLL(find_library("pam"))
 libc = CDLL(find_library("c"))
 
@@ -124,13 +127,12 @@ def authenticate(username, password, service='login', encoding='utf-8',
                    Defaults to 'True'.
     """
 
-    if sys.version_info >= (3,):
-        if isinstance(username, str):
-            username = username.encode(encoding)
-        if isinstance(password, str):
-            password = password.encode(encoding)
-        if isinstance(service, str):
-            service = service.encode(encoding)
+    if isinstance(username, unicode):
+        username = username.encode(encoding)
+    if isinstance(password, unicode):
+        password = password.encode(encoding)
+    if isinstance(service, unicode):
+        service = service.encode(encoding)
 
     @conv_func
     def my_conv(n_messages, messages, p_response, app_data):
